@@ -1,39 +1,40 @@
-import Link from "next/link"
-import { useRouter } from "next/dist/client/router"
-import { useState } from "react"
+import { useState } from "react";
+import MovieCategory from "./MovieCategory";
 
-const Form = ({formData, forNewMovie = true}) => {
-
-  const router = useRouter();
-
-  const [form, setForm] = useState({
-    title: formData.title,
-    splot: formData.splot,
-  });
+const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
   const [message, setMenssage] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(""); // Estado para almacenar la opción seleccionada
 
-  const handleChange = (e) => {
-    const { value, name } = e.target;
-    setForm({
-      ...form,
-      [name]: value,
-    });
+  const handleOptionChange = (event) => {
+    setSelectedOption(event.target.value); // Actualiza el estado con el valor seleccionado
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(forNewMovie){
-      await postData(form);
-    }else {
-    putData(form)
+
+    const title = e.target["title"].value;
+    const splot = e.target["splot"].value;
+    let _id = formData.id;
+    const form = { _id, title, splot, category: selectedOption };
+    let data;
+    console.log(e.target["category"]);
+
+    try {
+      if (forNewMovie) {
+        data = await postData(form);
+      } else if (isEditing) {
+        data = await putData(form);
+      }
+      updateMovieList(data);
+    } catch (error) {
+      console.log(error);
     }
   };
 
   const putData = async (form) => {
-    setMenssage([])
-    const {id} = router.query
+    setMenssage([]);
     try {
-      const res = await fetch(`/api/movie/${id}`, {
+      const res = await fetch(`/api/movie/${form._id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -52,16 +53,17 @@ const Form = ({formData, forNewMovie = true}) => {
           ]);
         }
       } else {
-        setMenssage([])
-        router.push("/");
+        setMenssage([]);
+        return data.data;
+        //   router.push("/");
       }
     } catch (error) {
-      console.log(error)
-  }
-  }
+      console.log(error);
+    }
+  };
+
   const postData = async (form) => {
     try {
-      console.log(form);
       const res = await fetch("/api/movie", {
         method: "POST",
         headers: {
@@ -81,13 +83,14 @@ const Form = ({formData, forNewMovie = true}) => {
           ]);
         }
       } else {
-        router.push("/");
+        return data.movie;
+        // router.push("/");
       }
     } catch (error) {
       console.log(error);
     }
   };
-
+console.log(selectedOption)
   return (
     <form onSubmit={handleSubmit}>
       <input
@@ -96,8 +99,7 @@ const Form = ({formData, forNewMovie = true}) => {
         placeholder="Title"
         autoComplete="off"
         name="title"
-        value={form.title}
-        onChange={handleChange}
+        defaultValue={formData.title}
       />
       <input
         className="form-control my-2"
@@ -105,15 +107,12 @@ const Form = ({formData, forNewMovie = true}) => {
         placeholder="Splot"
         autoComplete="off"
         name="splot"
-        value={form.splot}
-        onChange={handleChange}
+        defaultValue={formData.splot}
       />
+      <MovieCategory {...{ handleOptionChange, selectedOption }} />
       <button className="btn btn-primary w-100" type="submit">
         {forNewMovie ? "Agregar" : "editar"}
       </button>
-      <Link href="/">
-        <button className="btn btn-warning w-100 my-2">volver...</button>
-      </Link>
       {message.map(({ message }) => (
         <p key={message}>{message}</p>
       ))}

@@ -1,10 +1,73 @@
 import Head from "next/head";
 import conectarDB from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
-import Link from "next/link";
+import NewMovie from "../components/NewMovie";
+import MoviePreview from "@/components/MoviePreview";
+import { useEffect, useState } from "react";
 
 export default function Home({ movies }) {
-  console.log(movies);
+  const [allMovies, setAllMovies] = useState(movies);
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
+
+  useEffect(() => {
+    console.log("useEffect")
+    filterData();
+  }, [selectedCategoryFilter]);
+
+  const handleSelectFilterChange = (event) => {
+    setSelectedCategoryFilter(event.target.value);
+  };
+
+  const filterData = () => {
+    const movieFilter = [...movies];
+    const filtered = movieFilter.filter((movie) => {
+      return (
+        movie.category === selectedCategoryFilter ||
+        selectedCategoryFilter === "all"
+      );
+    });
+
+    setAllMovies(filtered);
+  };
+
+  // FILTRO DE PELICULAS
+  // 1. crear una variable tipo array pára ir guardando las peliculas que vaya seleccionando
+  // 2. recorrecer movies
+  // 3. seleccionar unicamente las movies con la categoria del filtro
+  // 4. hacerle push de la movie actual a la variable que cree para ir guardando las movies
+  // 5. usar setAllMovies con el array de las peliculas que filtre
+
+  const deleteMovieFromList = (movieId) => {
+    const newMovieList = Array.from(allMovies);
+
+    for (let i = 0; i < newMovieList.length; i++) {
+      if (newMovieList[i]?._id === movieId) {
+        newMovieList.splice(i, 1);
+
+        setAllMovies(newMovieList);
+      }
+    }
+  };
+
+  const updateMovieList = (data) => {
+    let editMovie = false;
+    const newMovieList = Array.from(allMovies);
+
+    for (const oldMovie of newMovieList) {
+      if (oldMovie._id === data._id) {
+        editMovie = true;
+        oldMovie.title = data.title;
+        oldMovie.splot = data.splot;
+      }
+    }
+
+    if (!editMovie) {
+      newMovieList.unshift(data);
+    }
+
+    setAllMovies(newMovieList);
+  };
+
   return (
     <div>
       <Head>
@@ -13,18 +76,30 @@ export default function Home({ movies }) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="container">
-        <h1>movies</h1>
-        <Link href="/new">
-          <button className="btn btn-primary w-100 mb-2">Agregar</button>
-        </Link>
-        {movies.map(({ _id, title, splot }) => (
-          <div className="card mb-2" key={_id}>
+        <h1>Movies</h1>
+        <select
+          name="Filter"
+          id="Filter"
+          value={selectedCategoryFilter}
+          onChange={handleSelectFilterChange}
+        >
+          <option value="all">Todos</option>
+          <option value="terror">Terror</option>
+          <option value="comedia">Comedia</option>
+          <option value="accion">Accion</option>
+        </select>
+        <NewMovie updateMovieList={updateMovieList} />
+        {allMovies.map(({ _id, title, splot }) => (
+          <div className="card mb-2" key={_id + title}>
             <div className="card-body">
               <div className="h5 text-uppercase">{title}</div>
-              <p className="fw-light">{splot}</p>
-              <Link href= {`/${_id}`}>
-                <button className="btn btn-success">Mas info...</button>
-              </Link>
+              <MoviePreview
+                id={_id}
+                splot={splot}
+                title={title}
+                updateMovieList={updateMovieList}
+                deleteMovieFromList={deleteMovieFromList}
+              />
             </div>
           </div>
         ))}
@@ -39,15 +114,7 @@ export async function getServerSideProps() {
 
     const res = await Movie.find({});
 
-    const movies = res.map((doc) => {
-      const movie = doc.toObject();
-      movie._id = `${movie._id}`;
-      return movie;
-    });
-
-    ///console.log(res)
-
-    return { props: { movies: movies } };
+    return { props: { movies: JSON.parse(JSON.stringify(res)) } };
   } catch (error) {
     console.log(error);
   }
