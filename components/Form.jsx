@@ -1,5 +1,6 @@
 import { useState } from "react";
 import MovieCategory from "./MovieCategory";
+import { createMovie, updateMovie } from "@/lib/movieApi";
 
 const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
   const [message, setMenssage] = useState([]);
@@ -21,9 +22,9 @@ const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
 
     try {
       if (forNewMovie) {
-        data = await postData(form);
+        data = await createMovie(form);
       } else if (isEditing) {
-        data = await putData(form);
+        data = await updateMovie(form);
       }
       updateMovieList(data);
     } catch (error) {
@@ -31,66 +32,6 @@ const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
     }
   };
 
-  const putData = async (form) => {
-    setMenssage([]);
-    try {
-      const res = await fetch(`/api/movie/${form._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        for (const key in data.error.errors) {
-          let error = data.error.errors[key];
-          setMenssage((oldmenssage) => [
-            ...oldmenssage,
-            { message: error.message },
-          ]);
-        }
-      } else {
-        setMenssage([]);
-        return data.data;
-        //   router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const postData = async (form) => {
-    try {
-      const res = await fetch("/api/movie", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        for (const key in data.error.errors) {
-          let error = data.error.errors[key];
-          setMenssage((oldmenssage) => [
-            ...oldmenssage,
-            { message: error.message },
-          ]);
-        }
-      } else {
-        return data.movie;
-        // router.push("/");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-console.log(selectedOption)
   return (
     <form onSubmit={handleSubmit}>
       <input
