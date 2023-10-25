@@ -17,10 +17,13 @@ const fetcher = async (url) => {
   return data;
 };
 
-const EditMovie = () => {
+const EditMovieOptions = () => {
   const router = useRouter();
   const { id } = router.query;
-  const { data: movie, error } = useSWR( id ? `/api/movie/${id}` : null, fetcher );
+  const { data: movie, error } = useSWR(
+    id ? `/api/movie/${id}` : null,
+    fetcher
+  );
 
   if (error) {
     return <div>Error</div>;
@@ -43,8 +46,8 @@ const EditMovie = () => {
     <div className="container">
       <h1>Editar peliculas</h1>
       <Form forNewMovie={false} formData={formData}></Form>
-    </div>
+    </div> 
   );
 };
 
-export default EditMovie;
+export default EditMovieOptions;

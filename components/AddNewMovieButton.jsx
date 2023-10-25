@@ -1,6 +1,7 @@
 import Form from "@/components/Form"
 
-const New= () => {
+
+const AddNewMovieButton = () => {
 
   const formData = {
     title: "",
@@ -15,4 +16,4 @@ const New= () => {
   )
 }
 
-export default New
+export default AddNewMovieButton

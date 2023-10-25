@@ -5,6 +5,7 @@ export default async function handler(req, res) {
   await conectarDB();
 
   const { method } = req;
+  console.log(method);
   switch (method) {
     case "POST":
       try {
