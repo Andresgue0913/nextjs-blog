@@ -3,39 +3,60 @@ import conectarDB from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import NewMovie from "../components/NewMovie";
 import MoviePreview from "@/components/MoviePreview";
+
 import { useEffect, useState } from "react";
 
 export default function Home({ movies }) {
   const [allMovies, setAllMovies] = useState(movies);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
+  const [searchMovie, setSearchMovie] = useState("");
 
   useEffect(() => {
-    console.log("useEffect")
-    filterData();
-  }, [selectedCategoryFilter]);
+    filterData({
+      searchValue: searchMovie,
+      filterValue: selectedCategoryFilter,
+    });
+  }, [selectedCategoryFilter, searchMovie]);
+
+  const handleSearchMovie = (e) => {
+    setSearchMovie(e.target.value);
+  };
 
   const handleSelectFilterChange = (event) => {
     setSelectedCategoryFilter(event.target.value);
   };
 
-  const filterData = () => {
+  const filterData = ({ searchValue, filterValue }) => {
     const movieFilter = [...movies];
+
     const filtered = movieFilter.filter((movie) => {
-      return (
+      const movieSearchFilter =
+        movie.title.toLowerCase().includes(searchValue.toLowerCase()) ||
+        movie.splot.toLowerCase().includes(searchValue.toLowerCase());
+
+      const filterByCategory =
         movie.category === selectedCategoryFilter ||
-        selectedCategoryFilter === "all"
-      );
+        selectedCategoryFilter === "all";
+      
+        if (searchValue && !filterValue) {
+        return movieSearchFilter;
+      }
+
+      if (filterValue && !searchValue) {
+        return filterByCategory;
+      }
+
+      if (searchValue && filterValue) {
+        return movieSearchFilter && filterByCategory;
+      }
+
+      if (!searchValue && !filterValue) {
+        return movie;
+      }
     });
 
     setAllMovies(filtered);
   };
-
-  // FILTRO DE PELICULAS
-  // 1. crear una variable tipo array pára ir guardando las peliculas que vaya seleccionando
-  // 2. recorrecer movies
-  // 3. seleccionar unicamente las movies con la categoria del filtro
-  // 4. hacerle push de la movie actual a la variable que cree para ir guardando las movies
-  // 5. usar setAllMovies con el array de las peliculas que filtre
 
   const deleteMovieFromList = (movieId) => {
     const newMovieList = Array.from(allMovies);
@@ -77,17 +98,26 @@ export default function Home({ movies }) {
       </Head>
       <main className="container">
         <h1>Movies</h1>
-        <select
-          name="Filter"
-          id="Filter"
-          value={selectedCategoryFilter}
-          onChange={handleSelectFilterChange}
-        >
-          <option value="all">Todos</option>
-          <option value="terror">Terror</option>
-          <option value="comedia">Comedia</option>
-          <option value="accion">Accion</option>
-        </select>
+        <div className="mb-2">
+          <input
+            type="text"
+            value={searchMovie}
+            onChange={handleSearchMovie}
+            placeholder="Buscar películas"
+          />
+          <select
+            className="mb-2"
+            name="Filter"
+            id="Filter"
+            value={selectedCategoryFilter}
+            onChange={handleSelectFilterChange}
+          >
+            <option value="all">Todos</option>
+            <option value="terror">Terror</option>
+            <option value="comedia">Comedia</option>
+            <option value="accion">Accion</option>
+          </select>
+        </div>
         <NewMovie updateMovieList={updateMovieList} />
         {allMovies.map(({ _id, title, splot }) => (
           <div className="card mb-2" key={_id + title}>
