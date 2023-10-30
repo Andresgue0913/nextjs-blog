@@ -1,6 +1,13 @@
 import { useState } from "react";
 import Form from "./Form";
-import { Button, CardActionArea, Container, Typography } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardActionArea,
+  Container,
+  Stack,
+  Typography,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
@@ -22,21 +29,28 @@ const NewMovie = ({ updateMovieList }) => {
   };
 
   return show ? (
-    <Container>
-      <CardActionArea>
+    <Card
+      sx={{
+        borderRadius: 3,
+        display: "flex",
+        flexDirection: "column",
+        p: 2,
+      }}
+    >
+      <Stack direction="row" justifyContent="space-between">
         <Typography gutterBottom variant="h5">
-          Agregar Movie
+          Create new movie
         </Typography>
         <Button variant="contained" color="warning" onClick={handleClick}>
           <CloseIcon />
         </Button>
-      </CardActionArea>
+      </Stack>
       <Form
         handleClose={handleClose}
         updateMovieList={updateMovieList}
         formData={formData}
       />
-    </Container>
+    </Card>
   ) : (
     <Fab
       onClick={handleClick}

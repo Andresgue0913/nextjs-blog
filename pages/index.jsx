@@ -2,22 +2,26 @@ import conectarDB from "@/lib/dbConnect";
 import Movie from "@/models/Movie";
 import NewMovie from "../components/NewMovie";
 import MoviePreview from "@/components/MoviePreview";
-import SearchIcon from "@mui/icons-material/Search";
 import { useEffect, useState } from "react";
 import {
   Container,
   Typography,
   Card,
   Box,
-  IconButton,
-  TextField,
 } from "@mui/material";
 import SelectCategoryMovie from "@/components/SelectCategoryMovie";
+import { useFormik } from "formik";
+import { searchValidationSchema } from "../utils/validations";
+import {
+  getFilteredMovie,
+  deleteMovieFromArray,
+  getUpdatedOrRemovedMovieList,
+} from "@/utils/common";
+import SearchBar from "@/components/SearchBar";
 
 export default function Home({ movies }) {
   const [allMovies, setAllMovies] = useState(movies);
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("all");
-  const [searchMovie, setSearchMovie] = useState("");
 
   useEffect(() => {
     handleButtonClick({
@@ -27,7 +31,7 @@ export default function Home({ movies }) {
 
   const handleButtonClick = () => {
     filterData({
-      searchValue: searchMovie,
+      searchValue: formik.values.searchMovies,
       filterValue: selectedCategoryFilter,
     });
   };
@@ -35,13 +39,10 @@ export default function Home({ movies }) {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       filterData({
-        searchValue: searchMovie,
+        searchValue: formik.values.searchMovies,
         filterValue: selectedCategoryFilter,
       });
     }
-  };
-  const handleSearchMovie = (e) => {
-    setSearchMovie(e.target.value);
   };
 
   const handleSelectFilterChange = (event) => {
@@ -49,67 +50,27 @@ export default function Home({ movies }) {
   };
 
   const filterData = ({ searchValue, filterValue }) => {
-    const movieFilter = [...movies];
-
-    const filtered = movieFilter.filter((movie) => {
-      const movieSearchFilter =
-        movie.title.toLowerCase().includes(searchValue.toLowerCase()) ||
-        movie.splot.toLowerCase().includes(searchValue.toLowerCase());
-
-      const filterByCategory =
-        movie.category === selectedCategoryFilter ||
-        selectedCategoryFilter === "all";
-
-      if (searchValue && !filterValue) {
-        return movieSearchFilter;
-      }
-
-      if (filterValue && !searchValue) {
-        return filterByCategory;
-      }
-
-      if (searchValue && filterValue) {
-        return movieSearchFilter && filterByCategory;
-      }
-
-      if (!searchValue && !filterValue) {
-        return movie;
-      }
-    });
-
+    const filtered = getFilteredMovie({ movies, filterValue, searchValue });
     setAllMovies(filtered);
   };
 
   const deleteMovieFromList = (movieId) => {
-    const newMovieList = Array.from(allMovies);
-
-    for (let i = 0; i < newMovieList.length; i++) {
-      if (newMovieList[i]?._id === movieId) {
-        newMovieList.splice(i, 1);
-
-        setAllMovies(newMovieList);
-      }
-    }
+    const newMovieList = deleteMovieFromArray({ allMovies, movieId });
+    setAllMovies(newMovieList);
   };
 
   const updateMovieList = (data) => {
-    let editMovie = false;
-    const newMovieList = Array.from(allMovies);
-
-    for (const oldMovie of newMovieList) {
-      if (oldMovie._id === data._id) {
-        editMovie = true;
-        oldMovie.title = data.title;
-        oldMovie.splot = data.splot;
-      }
-    }
-
-    if (!editMovie) {
-      newMovieList.unshift(data);
-    }
-
+    const newMovieList = getUpdatedOrRemovedMovieList({ allMovies, data });
     setAllMovies(newMovieList);
   };
+
+  const formik = useFormik({
+    initialValues: {
+      searchMovies: "",
+    },
+    validationSchema: searchValidationSchema,
+    onSubmit: handleButtonClick,
+  });
 
   return (
     <Container
@@ -144,29 +105,7 @@ export default function Home({ movies }) {
               gap: 1,
             }}
           >
-            <TextField
-              sx={{
-                width: "85%",
-                order: 2,
-              }}
-              variant="outlined"
-              type="text"
-              value={searchMovie}
-              onChange={handleSearchMovie}
-              onKeyPress={handleKeyPress}
-              label="Search Movie"
-            />
-            <IconButton
-              sx={{
-                order: 3,
-              }}
-              onClick={handleButtonClick}
-              variant="contained"
-              size="large"
-              color="primary"
-            >
-              <SearchIcon />
-            </IconButton>
+            <SearchBar formik={formik} handleKeyPress={handleKeyPress} />
             <SelectCategoryMovie
               handleSelectFilterChange={handleSelectFilterChange}
               selectedCategoryFilter={selectedCategoryFilter}
