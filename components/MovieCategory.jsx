@@ -1,44 +1,45 @@
+import {
+  Container,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+} from "@mui/material";
 import React from "react";
 
 const MovieCategory = ({ selectedOption, handleOptionChange }) => {
   return (
-    <div>
-      <fieldset>
-        <legend name="category">Select a category</legend>
-        <div>
-          <input
-            type="radio"
+    <Container>
+      <FormControl
+        aria-labelledby="Category"
+        name="controlled-radio-buttons"
+        value={selectedOption}
+        onChange={handleOptionChange}
+      >
+        <FormLabel id="Category">Select a category</FormLabel>
+        <RadioGroup>
+          <FormControlLabel
             value="terror"
-            name="category"
             checked={selectedOption === "terror"}
-            onChange={handleOptionChange}
+            control={<Radio />}
+            label="Terror"
           />
-          <label htmlFor="terror"> Terror </label>
-        </div>
-
-        <div>
-          <input
-            type="radio"
+          <FormControlLabel
             value="comedia"
-            name="category"
             checked={selectedOption === "comedia"}
-            onChange={handleOptionChange}
+            control={<Radio />}
+            label="comedia"
           />
-          <label htmlFor="comedia"> Comedia </label>
-        </div>
-
-        <div>
-          <input
-            type="radio"
+          <FormControlLabel
             value="accion"
-            name="category"
             checked={selectedOption === "accion"}
-            onChange={handleOptionChange}
+            control={<Radio />}
+            label="accion"
           />
-          <label htmlFor="accion"> Accion </label>
-        </div>
-      </fieldset>
-    </div>
+        </RadioGroup>
+      </FormControl>
+    </Container>
   );
 };
 

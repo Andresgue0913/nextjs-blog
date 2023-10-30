@@ -1,19 +1,20 @@
-import Form from "@/components/Form"
-
+import Form from "@/components/Form";
+import { Container, Typography } from "@mui/material";
 
 const AddNewMovieButton = () => {
-
   const formData = {
     title: "",
-    splot: ""
-  }
+    splot: "",
+  };
 
   return (
-    <div className="container">
-      <h1 className="my-3">Agregar Movie</h1>
+    <Container>
+      <Typography gutterBottom variant="h5" component="div">
+        Agregar Movie
+      </Typography>
       <Form formData={formData} />
-    </div>
-  )
-}
+    </Container>
+  );
+};
 
-export default AddNewMovieButton
+export default AddNewMovieButton;

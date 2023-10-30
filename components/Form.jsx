@@ -1,24 +1,34 @@
-import { useState } from "react";
+import { useState} from "react";
 import MovieCategory from "./MovieCategory";
 import { createMovie, updateMovie } from "@/lib/movieApi";
+import { Box, Button, TextField, Typography, Stack } from "@mui/material";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
 
 const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
-  const [message, setMenssage] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(""); // Estado para almacenar la opción seleccionada
+  const [message, setMessage] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(formData.category || ''); // Estado para almacenar la opción seleccionada
+  const [title, setTitle] = useState(formData.title || '');
+  const [splot, setSplot] = useState(formData.splot || '');
 
   const handleOptionChange = (event) => {
-    setSelectedOption(event.target.value); // Actualiza el estado con el valor seleccionado
+    setSelectedOption(event.target.value);
+  };
+
+  const handleTitleChange = (event) => {
+    setTitle(event.target.value);
+  };
+
+  const handleSplotChange = (event) => {
+    setSplot(event.target.value);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const title = e.target["title"].value;
-    const splot = e.target["splot"].value;
     let _id = formData.id;
     const form = { _id, title, splot, category: selectedOption };
     let data;
-    console.log(e.target["category"]);
+    console.log(formData.category);
 
     try {
       if (forNewMovie) {
@@ -33,31 +43,50 @@ const Form = ({ updateMovieList, formData, forNewMovie = true, isEditing }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        className="form-control my-2"
+    <>
+      <TextField
+        fullWidth
+        label="Title"
         type="text"
-        placeholder="Title"
+        margin="dense"
         autoComplete="off"
-        name="title"
-        defaultValue={formData.title}
+        id="title"
+        variant="outlined"
+        value={title}
+        onChange={handleTitleChange}
+        required
       />
-      <input
-        className="form-control my-2"
+      <TextField
+        fullWidth
+        label="Splot"
         type="text"
-        placeholder="Splot"
+        margin="dense"
         autoComplete="off"
-        name="splot"
-        defaultValue={formData.splot}
+        id="splot"
+        variant="outlined"
+        value={splot}
+        onChange={handleSplotChange}
+        required
       />
       <MovieCategory {...{ handleOptionChange, selectedOption }} />
-      <button className="btn btn-primary w-100" type="submit">
-        {forNewMovie ? "Agregar" : "editar"}
-      </button>
+      <Stack alignItems={"flex-end"}>
+        <Button
+          variant="contained"
+          color="info"
+          size="large"
+          startIcon={<SaveAltIcon />}
+          type="submit"
+          onClick={handleSubmit}
+        >
+          {forNewMovie ? "Add" : "Save"}
+        </Button>
+      </Stack>
       {message.map(({ message }) => (
-        <p key={message}>{message}</p>
+        <Typography gutterBottom variant="h5" key={message}>
+          {message}
+        </Typography>
       ))}
-    </form>
+    </>
   );
 };
 

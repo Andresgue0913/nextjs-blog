@@ -1,21 +1,25 @@
 import Form from "./Form";
+import { Button, Card, Typography, Stack } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const EditMovie = ({ updateMovieList, handleClick, splot, title, id }) => {
   return (
-    <div className="container">
-      <div>
-        <h1 className="my-3">Editar Movie</h1>
-        <button className="btn btn-danger w-20 mb-2" onClick={handleClick}>
-          Cerrar
-        </button>
-      </div>
+    <Card>
+      <Stack direction="row" justifyContent="space-between" mb={3}>
+        <Typography gutterBottom variant="h5">
+          Edit Movie
+        </Typography>
+        <Button variant="contained" color="warning" onClick={handleClick}>
+          <CloseIcon />
+        </Button>
+      </Stack>
       <Form
         updateMovieList={updateMovieList}
         formData={{ splot, title, id }}
         forNewMovie={false}
         isEditing={true}
       />
-    </div>
+    </Card>
   );
 };
 

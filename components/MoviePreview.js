@@ -1,5 +1,17 @@
 import React, { useState } from "react";
 import EditMovie from "./EditMovie";
+import {
+  Typography,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import toast, { Toaster } from "react-hot-toast";
+import InfoIcon from "@mui/icons-material/Info";
+import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 
 const MoviePreview = ({
   id,
@@ -26,10 +38,11 @@ const MoviePreview = ({
       });
 
       if (response.ok) {
+        toast.success("Successfully eliminated!");
         deleteMovieFromList(id);
       }
     } catch (error) {
-      console.error("Error al eliminar la película:", error);
+      toast.error("error eliminated!", error);
     }
   };
 
@@ -46,33 +59,74 @@ const MoviePreview = ({
       />
     );
   }
-  if (!showOptions) {
-    return (
-      <div className="container">
-        <p className="fw-light">{showOptions ? "Agregar" : `${splot}`}</p>
-        <div>
-          <button className="btn btn-success me-2" onClick={handleShowOptions}>
-            Back
-          </button>
-          <button className="btn btn-warning me-2" onClick={handleShowEditForm}>
-            Edit
-          </button>
-          <button className="btn btn-danger" onClick={handleDelete}>
-            Delete
-          </button>
-        </div>
-      </div>
-    );
-  } else {
-    return (
-      <div className="container">
-        <p className="fw-light">{showOptions ? "..." : `${splot}`}</p>
-        <button className="btn btn-info me-2" onClick={handleShowOptions}>
-          More info...
-        </button>
-      </div>
-    );
-  }
+
+  return (
+    <Card>
+      <CardContent>
+        <Typography gutterBottom variant="h5">
+          {title}
+        </Typography>
+        {!showOptions ? (
+          <>
+            <Typography variant="h6" color="text.secondary">
+              {showOptions ? "Add" : `${splot}`}
+            </Typography>
+            <CardActions
+              sx={{
+                display: "flex",
+                gap: 1,
+              }}
+            >
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleShowOptions}
+              >
+                <KeyboardBackspaceIcon />
+              </Button>
+              <Button
+                variant="contained"
+                startIcon={<EditIcon />}
+                color="error"
+                onClick={handleShowEditForm}
+                sx={{
+                  ml: 1,
+                }}
+              >
+                Edit
+              </Button>
+
+              <Button
+                onClick={handleDelete}
+                variant="contained"
+                startIcon={<DeleteIcon />}
+                color="warning"
+                sx={{
+                  ml: 1,
+                }}
+              >
+                Delete
+              </Button>
+            </CardActions>
+          </>
+        ) : (
+          <>
+            <Typography variant="h5" color="text.secondary">
+              {showOptions ? "..." : `${splot}`}
+            </Typography>
+            <Button
+              variant="contained"
+              color="info"
+              startIcon={<InfoIcon />}
+              onClick={handleShowOptions}
+            >
+              More info...
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
 };
 
 export default MoviePreview;

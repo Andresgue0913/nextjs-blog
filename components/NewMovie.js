@@ -1,11 +1,18 @@
 import { useState } from "react";
 import Form from "./Form";
-import MovieCategory from "./MovieCategory";
+import { Button, CardActionArea, Container, Typography } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import Fab from "@mui/material/Fab";
+import AddIcon from "@mui/icons-material/Add";
 
 const NewMovie = ({ updateMovieList }) => {
   const [show, setShow] = useState(false);
 
   const handleClick = () => {
+    setShow(!show);
+  };
+
+  let handleClose = () => {
     setShow(!show);
   };
 
@@ -15,19 +22,30 @@ const NewMovie = ({ updateMovieList }) => {
   };
 
   return show ? (
-    <div className="container">
-      <div>
-        <h1 className="my-3">Agregar Movie</h1>
-        <button className="btn btn-danger w-20 mb-2" onClick={handleClick}>
-          Cerrar
-        </button>
-      </div>
-      <Form updateMovieList={updateMovieList} formData={formData} />
-    </div>
+    <Container>
+      <CardActionArea>
+        <Typography gutterBottom variant="h5">
+          Agregar Movie
+        </Typography>
+        <Button variant="contained" color="warning" onClick={handleClick}>
+          <CloseIcon />
+        </Button>
+      </CardActionArea>
+      <Form
+        handleClose={handleClose}
+        updateMovieList={updateMovieList}
+        formData={formData}
+      />
+    </Container>
   ) : (
-    <button className="btn btn-primary w-100 mb-2" onClick={handleClick}>
-      Agregar
-    </button>
+    <Fab
+      onClick={handleClick}
+      color="error"
+      aria-label="add"
+      sx={{ position: "fixed", bottom: 16, right: 16 }}
+    >
+      <AddIcon />
+    </Fab>
   );
 };
 

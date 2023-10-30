@@ -1,4 +1,5 @@
 import Form from "@/components/Form";
+import { Container } from "@mui/material";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 
@@ -31,9 +32,9 @@ const EditMovieOptions = () => {
 
   if (!movie) {
     return (
-      <div className="container mt-5 text-center">
-        <h1>Loading...</h1>
-      </div>
+      <Container>
+        <Typography gutterBottom variant="h5" component="div">Loading...</Typography>
+      </Container>
     );
   }
 
@@ -43,10 +44,12 @@ const EditMovieOptions = () => {
   };
 
   return (
-    <div className="container">
-      <h1>Editar peliculas</h1>
+    <Container sx={{
+      display: "flex"
+    }}>
+      <Typography gutterBottom variant="h5" component="div">Editar peliculas</Typography>
       <Form forNewMovie={false} formData={formData}></Form>
-    </div> 
+    </Container> 
   );
 };
 
