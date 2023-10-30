@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "dependencies": {
     "@emotion/cache": "^11.11.0",
@@ -30,5 +32,18 @@
     "styled-components": "^6.1.0",
     "swr": "^2.2.4",
     "yup": "^1.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.2",
+    "@babel/preset-env": "^7.23.2",
+    "@storybook/addon-essentials": "^7.5.2",
+    "@storybook/addons": "^7.5.2",
+    "@storybook/react": "^7.5.2",
+    "@storybook/react-webpack5": "^7.5.2",
+    "@swc/core": "^1.3.95",
+    "eslint-plugin-storybook": "^0.6.15",
+    "storybook": "^7.5.2",
+    "storybook-addon-next-router": "^4.0.2",
+    "storybook-addon-swc": "^1.2.0"
   }
 }

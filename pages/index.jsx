@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import SelectCategoryMovie from "@/components/SelectCategoryMovie";
 import { useFormik } from "formik";
-import { searchValidationSchema } from "../utils/validations";
+import { searchValidationSchema } from "@/utils/validations";
 import {
   getFilteredMovie,
   deleteMovieFromArray,
